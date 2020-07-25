@@ -1,8 +1,10 @@
 import           RIO
 
-import           Development.Shake (getDirectoryFilesIO, shakeArgs,
+import           Development.Shake (getDirectoryFilesIO, need, shakeArgs,
                                     shakeOptions, want, (%>))
 import           Development.Shake.FilePath ((-<.>), (</>))
+import           Text.Pandoc.App (convertWithOpts, defaultOpts, optInputFiles,
+                                  optOutputFile, optStandalone)
 
 main :: IO ()
 main = do
@@ -12,5 +14,13 @@ main = do
       [("pages" </> page, "_site" </> page -<.> "html") | page <- mdPages]
   shakeArgs shakeOptions $ do
     want $ map snd pageRules
-    for_ pageRules \(source, html) -> do
-      html %> \_ -> _ source
+    for_ pageRules \(sourceFile, htmlFile) -> do
+      htmlFile %> \_ -> do
+        need ["exe/Main.hs", sourceFile]
+        liftIO $
+          convertWithOpts
+            defaultOpts
+              { optInputFiles = Just [sourceFile]
+              , optOutputFile = Just htmlFile
+              , optStandalone = True
+              }
