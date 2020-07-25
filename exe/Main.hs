@@ -1,4 +1,7 @@
 import           RIO
 
+import           Development.Shake (shakeArgs, shakeOptions)
+
 main :: IO ()
-main = pure ()
+main = shakeArgs shakeOptions $ do
+  pure ()

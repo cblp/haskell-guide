@@ -4,7 +4,7 @@ name: haskell-journey
 version: 2020
 
 executable build_site
-  build-depends: rio
+  build-depends: rio, shake
   default-extensions: NoImplicitPrelude
   default-language: Haskell2010
   hs-source-dirs: exe
