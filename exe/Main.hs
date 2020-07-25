@@ -1,15 +1,16 @@
 import           RIO
 
-import           Development.Shake (getDirectoryFiles, need, shakeArgs,
-                                    shakeOptions, want, (~>))
+import           Development.Shake (getDirectoryFilesIO, shakeArgs,
+                                    shakeOptions, want, (%>))
 import           Development.Shake.FilePath ((-<.>), (</>))
 
 main :: IO ()
-main =
+main = do
+  mdPages <- getDirectoryFilesIO "pages" ["//*.md"]
+  let
+    pageRules =
+      [("pages" </> page, "_site" </> page -<.> "html") | page <- mdPages]
   shakeArgs shakeOptions $ do
-    want [allPagesAsHtml]
-    allPagesAsHtml ~> do
-      pages <- getDirectoryFiles "pages" ["//*.md"]
-      need ["_site" </> page -<.> "html" | page <- pages]
-  where
-    allPagesAsHtml = ".allPagesAsHtml"
+    want $ map snd pageRules
+    for_ pageRules \(source, html) -> do
+      html %> \_ -> _ source
