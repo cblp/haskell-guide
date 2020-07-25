@@ -1,0 +1,3 @@
+## Build site
+
+    stack run
