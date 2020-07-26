@@ -1,10 +1,10 @@
 cabal-version: 2.2
 
-name: haskell-journey
+name: haskell-guide
 version: 2020
 
 executable build_site
-  build-depends: rio, pandoc, shake
+  build-depends: directory, pandoc, rio, shake, typed-process
   default-extensions:
     BlockArguments
     DeriveAnyClass DeriveGeneric
@@ -14,3 +14,4 @@ executable build_site
   default-language: Haskell2010
   hs-source-dirs: exe
   main-is: Main.hs
+  other-modules: GitHubPages

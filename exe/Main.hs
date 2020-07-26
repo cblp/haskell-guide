@@ -1,10 +1,12 @@
 import           RIO
 
-import           Development.Shake (getDirectoryFilesIO, need, shakeArgs,
-                                    shakeOptions, want, (%>))
+import           Development.Shake (addTarget, getDirectoryFilesIO, need,
+                                    shakeArgs, shakeOptions, want, (%>))
 import           Development.Shake.FilePath ((-<.>), (</>))
 import           Text.Pandoc.App (convertWithOpts, defaultOpts, optInputFiles,
                                   optOutputFile, optStandalone)
+
+import           GitHubPages (deploy)
 
 main :: IO ()
 main = do
@@ -24,3 +26,4 @@ main = do
               , optOutputFile = Just htmlFile
               , optStandalone = True
               }
+    addTarget "deploy" $ error "deploy"
