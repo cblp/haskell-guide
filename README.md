@@ -3,3 +3,7 @@
 ## Build site
 
     stack run
+
+## Deploy site
+
+    stack run deploy

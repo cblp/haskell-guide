@@ -1,7 +1,8 @@
 import           RIO
 
-import           Development.Shake (addTarget, getDirectoryFilesIO, need,
-                                    shakeArgs, shakeOptions, want, (%>))
+import           Development.Shake (getDirectoryFiles, getDirectoryFilesIO,
+                                    need, shakeArgs, shakeOptions, want, (%>),
+                                    (~>))
 import           Development.Shake.FilePath ((-<.>), (</>))
 import           Text.Pandoc.App (convertWithOpts, defaultOpts, optInputFiles,
                                   optOutputFile, optStandalone)
@@ -10,20 +11,33 @@ import           GitHubPages (deploy)
 
 main :: IO ()
 main = do
-  mdPages <- getDirectoryFilesIO "pages" ["//*.md"]
-  let
-    pageRules =
-      [("pages" </> page, "_site" </> page -<.> "html") | page <- mdPages]
-  shakeArgs shakeOptions $ do
-    want $ map snd pageRules
-    for_ pageRules \(sourceFile, htmlFile) ->
-      htmlFile %> \_ -> do
-        need [sourceFile, "exe/Main.hs"]
+  pagesMd <- getDirectoryFilesIO sourceDir ["//*.md"]
+  let pagesHtml = map (-<.> "html")  pagesMd
+  let filesHtml = map (buildDir </>) pagesHtml
+
+  shakeArgs shakeOptions do
+
+    want filesHtml
+
+    for_ (zip pagesMd pagesHtml) \(pageSource, pageHtml) -> do
+      let fileSource = sourceDir </> pageSource
+      let fileHtml   = buildDir  </> pageHtml
+      fileHtml %> \_ -> do
+        need [fileSource, "exe/Main.hs"]
         liftIO $
           convertWithOpts
             defaultOpts
-              { optInputFiles = Just [sourceFile]
-              , optOutputFile = Just htmlFile
+              { optInputFiles = Just [fileSource]
+              , optOutputFile = Just fileHtml
               , optStandalone = True
               }
-    addTarget "deploy" $ error "deploy"
+
+    "deploy" ~> do
+      need filesHtml
+      liftIO $ deploy buildDir pagesHtml
+
+sourceDir :: FilePath
+sourceDir = "pages"
+
+buildDir :: FilePath
+buildDir = "_site"
