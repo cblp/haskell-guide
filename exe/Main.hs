@@ -11,7 +11,7 @@ main = do
   mdPages <- getDirectoryFilesIO "pages" ["//*.md"]
   let
     pageRules =
-      [("pages" </> page, "docs" </> page -<.> "html") | page <- mdPages]
+      [("pages" </> page, "_site" </> page -<.> "html") | page <- mdPages]
   shakeArgs shakeOptions $ do
     want $ map snd pageRules
     for_ pageRules \(sourceFile, htmlFile) ->
