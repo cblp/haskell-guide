@@ -1,3 +1,0 @@
-- error: {lhs: a $ b, rhs: a b, side: isRecUpdate b || isRecConstr b}
-- warn: {name: Redundant do}
-- ignore: {name: Use camelCase}
