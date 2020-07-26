@@ -11,12 +11,12 @@ main = do
   mdPages <- getDirectoryFilesIO "pages" ["//*.md"]
   let
     pageRules =
-      [("pages" </> page, "_site" </> page -<.> "html") | page <- mdPages]
+      [("pages" </> page, "docs" </> page -<.> "html") | page <- mdPages]
   shakeArgs shakeOptions $ do
     want $ map snd pageRules
-    for_ pageRules \(sourceFile, htmlFile) -> do
+    for_ pageRules \(sourceFile, htmlFile) ->
       htmlFile %> \_ -> do
-        need ["exe/Main.hs", sourceFile]
+        need [sourceFile, "exe/Main.hs"]
         liftIO $
           convertWithOpts
             defaultOpts

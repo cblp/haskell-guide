@@ -1,4 +1,4 @@
-# Haskell Journey -- A Map Of Haskell Land
+# Haskell Guide -- A Map Of Haskell Land
 
 ## Build site
 
